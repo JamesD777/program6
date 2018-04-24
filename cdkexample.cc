@@ -9,6 +9,7 @@
 #include <fstream>
 #include <iomanip>
 #include <cstdint>
+#include <string>
 
 #define MATRIX_WIDTH 3
 #define MATRIX_HEIGHT 5
@@ -17,6 +18,13 @@
 
 using namespace std;
 
+class BinaryFileHeader
+{
+public:
+  uint32_t magicNumber; /* Should be 0xFEEDFACE */
+  uint32_t versionNumber;
+  uint64_t numRecords;
+};
 /*
  * Records in the file have a fixed length buffer
  * that will hold a C-Style string. This is the
@@ -32,19 +40,22 @@ public:
 
 int main()
 {
+  BinaryFileRecord *myRecord = new BinaryFileRecord();
+  BinaryFileHeader *myHeader = new BinaryFileHeader();
+  ifstream binInfile ("cs3377.bin", ios::in | ios::binary);
 
+  binInfile.read((char *) myHeader, sizeof(BinaryFileHeader));
+  binInfile.read((char *) myRecord, sizeof(BinaryFileRecord));
+
+  string mN = to_string(myHeader->magicNumber);
+  string vN = to_string(myHeader->versionNumber);
+  string nR = to_string(myHeader->numRecords);
+  mN = "Magic: " + mN;
+  vN = "Version: " + vN;
+  nR = "numRecords: " + nR;
   WINDOW	*window;
   CDKSCREEN	*cdkscreen;
   CDKMATRIX     *myMatrix;           // CDK Screen Matrix
-
-  BinaryFileRecord *myRecord = new BinaryFileRecord();
-
-  ifstream binInfile ("binaryfile.bin", ios::in | ios::binary);
-
-  binInfile.read((char *) myRecord, sizeof(BinaryFileRecord));
-  cout << "Value was: " << setprecision(10) << (uint16_t)(myRecord->strLength) << endl;
-  cout << "Value was: " << setprecision(10) << myRecord->stringBuffer[0] << endl;
-
 
   // Remember that matrix starts out at 1,1.
   // Since arrays start out at 0, the first entries
@@ -89,7 +100,9 @@ int main()
   /*
    * Dipslay a message
    */
-  setCDKMatrixCell(myMatrix, 2, 2, "Test Message");
+  setCDKMatrixCell(myMatrix, 1, 1, mN.c_str());
+  setCDKMatrixCell(myMatrix, 1, 2, vN.c_str());
+  setCDKMatrixCell(myMatrix, 1, 3, nR.c_str());
   drawCDKMatrix(myMatrix, true);    /* required  */
 
   /* So we can see results, pause until a key is pressed. */
