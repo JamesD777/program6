@@ -10,10 +10,12 @@
 #include <iomanip>
 #include <cstdint>
 #include <string>
+#include <sstream>
+#include <algorithm>
 
 #define MATRIX_WIDTH 3
 #define MATRIX_HEIGHT 5
-#define BOX_WIDTH 15
+#define BOX_WIDTH 20
 #define MATRIX_NAME_STRING "Test Matrix"
 
 using namespace std;
@@ -47,10 +49,15 @@ int main()
   binInfile.read((char *) myHeader, sizeof(BinaryFileHeader));
   binInfile.read((char *) myRecord, sizeof(BinaryFileRecord));
 
-  string mN = to_string(myHeader->magicNumber);
+  stringstream stream;
+  stream << hex << myHeader->magicNumber;
+  string mN( stream.str() );
+  transform(mN.begin(), mN.end(), mN.begin(), ::toupper);
+  
+  //string mN = to_string(myHeader->magicNumber);
   string vN = to_string(myHeader->versionNumber);
   string nR = to_string(myHeader->numRecords);
-  mN = "Magic: " + mN;
+  mN = "Magic: 0x" + mN;
   vN = "Version: " + vN;
   nR = "numRecords: " + nR;
   WINDOW	*window;
