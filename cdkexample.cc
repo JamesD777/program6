@@ -4,17 +4,31 @@
  * 3377.501
  */
 
-#include <iostream>
 #include "cdk.h"
+#include <iostream>
+#include <fstream>
+#include <iomanip>
+#include <cstdint>
 
-
-#define MATRIX_WIDTH 4
-#define MATRIX_HEIGHT 3
+#define MATRIX_WIDTH 3
+#define MATRIX_HEIGHT 5
 #define BOX_WIDTH 15
 #define MATRIX_NAME_STRING "Test Matrix"
 
 using namespace std;
 
+/*
+ * Records in the file have a fixed length buffer
+ * that will hold a C-Style string. This is the
+ * size of the fixed length buffer.
+ */
+const int maxRecordStringLength = 25;
+class BinaryFileRecord
+{
+public:
+  uint8_t strLength;
+  char stringBuffer[maxRecordStringLength];
+};
 
 int main()
 {
@@ -22,6 +36,15 @@ int main()
   WINDOW	*window;
   CDKSCREEN	*cdkscreen;
   CDKMATRIX     *myMatrix;           // CDK Screen Matrix
+
+  BinaryFileRecord *myRecord = new BinaryFileRecord();
+
+  ifstream binInfile ("binaryfile.bin", ios::in | ios::binary);
+
+  binInfile.read((char *) myRecord, sizeof(BinaryFileRecord));
+  cout << "Value was: " << setprecision(10) << (uint16_t)(myRecord->strLength) << endl;
+  cout << "Value was: " << setprecision(10) << myRecord->stringBuffer[0] << endl;
+
 
   // Remember that matrix starts out at 1,1.
   // Since arrays start out at 0, the first entries
@@ -75,4 +98,7 @@ int main()
 
   // Cleanup screen
   endCDK();
+  binInfile.close();
+
+
 }
