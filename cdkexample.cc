@@ -47,7 +47,6 @@ int main()
   ifstream binInfile ("cs3377.bin", ios::in | ios::binary);
 
   binInfile.read((char *) myHeader, sizeof(BinaryFileHeader));
-  binInfile.read((char *) myRecord, sizeof(BinaryFileRecord));
 
   stringstream stream;
   stream << hex << myHeader->magicNumber;
@@ -60,6 +59,8 @@ int main()
   mN = "Magic: 0x" + mN;
   vN = "Version: " + vN;
   nR = "numRecords: " + nR;
+
+
   WINDOW	*window;
   CDKSCREEN	*cdkscreen;
   CDKMATRIX     *myMatrix;           // CDK Screen Matrix
@@ -110,6 +111,15 @@ int main()
   setCDKMatrixCell(myMatrix, 1, 1, mN.c_str());
   setCDKMatrixCell(myMatrix, 1, 2, vN.c_str());
   setCDKMatrixCell(myMatrix, 1, 3, nR.c_str());
+  for(uint64_t i = 0; i < 4 && i < myHeader->numRecords; i++){
+    binInfile.read((char *) myRecord, sizeof(BinaryFileRecord));
+    string temp = "strlen: ";
+    temp += to_string(myRecord->strLength);
+    setCDKMatrixCell(myMatrix, i+2, 1, temp.c_str());
+
+    setCDKMatrixCell(myMatrix, i+2, 2, myRecord->stringBuffer);
+  }
+
   drawCDKMatrix(myMatrix, true);    /* required  */
 
   /* So we can see results, pause until a key is pressed. */

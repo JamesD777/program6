@@ -4,7 +4,7 @@
 
 CXX = g++
 CXXFLAGS = -Wall -g -std=c++11
-CPPFLAGS = -I/scratch/perkins/include
+CPPFLAGS = -I/scratch/perkins/include -Wno-write-strings
 LDFLAGS = -L/scratch/perkins/lib
 LDLIBS = -lcdk -lcurses 
 
